@@ -1,0 +1,26 @@
+{
+  "name": "lakkhi-fundraising-platform",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "1.1.7",
+    "@chakra-ui/react": "1.8.8",
+    "@emotion/react": "11.9.3",
+    "@emotion/styled": "11.9.3",
+    "@solana/wallet-adapter-base": "0.9.22",
+    "@solana/wallet-adapter-react": "0.15.32",
+    "@solana/wallet-adapter-react-ui": "0.9.31",
+    "@solana/wallet-adapter-wallets": "0.19.16",
+    "@solana/web3.js": "1.73.3",
+    "date-fns": "2.29.3",
+    "framer-motion": "6.5.1",
+    "next": "13.3.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  }
+} 
