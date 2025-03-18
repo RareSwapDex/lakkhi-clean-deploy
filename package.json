@@ -19,6 +19,7 @@
     "@solana/web3.js": "1.73.3",
     "assert": "^2.1.0",
     "browserify-zlib": "^0.2.0",
+    "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
     "date-fns": "2.29.3",
     "framer-motion": "6.5.1",
