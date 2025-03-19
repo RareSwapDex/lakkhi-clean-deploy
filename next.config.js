@@ -17,9 +17,12 @@ const nextConfig = {
     };
 
     // Use a more direct approach to solve the rpc-websockets issue
+    // Add specific path aliases to catch all the import variations
     config.resolve.alias = {
       ...config.resolve.alias,
       'rpc-websockets': path.resolve(__dirname, 'polyfills/rpc-websockets-mock.js'),
+      'rpc-websockets/dist/lib/client': path.resolve(__dirname, 'polyfills/rpc-websockets-mock.js'),
+      'rpc-websockets/dist/lib/client/websocket.browser': path.resolve(__dirname, 'polyfills/rpc-websockets-client-browser.js'),
     };
 
     return config;

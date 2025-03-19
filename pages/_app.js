@@ -1,3 +1,6 @@
+// Import polyfills first (must come before any other imports)
+import '../polyfills';
+
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
@@ -5,9 +8,6 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter, SolflareWalletAdapter, TorusWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
 import { useMemo } from 'react';
-
-// Import polyfills (must come before any Solana imports)
-import '../polyfills';
 
 // Import the wallet adapter CSS
 import '@solana/wallet-adapter-react-ui/styles.css';
