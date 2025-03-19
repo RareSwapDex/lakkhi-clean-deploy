@@ -79,7 +79,34 @@ class RpcWebSocketClient$1 {
     this.subscribe = () => Promise.resolve(1);
     this.unsubscribe = () => Promise.resolve(true);
   }
-}`
+}
+
+// Additional mocks for other common exports from @solana/web3.js
+// PublicKey class mock
+class PublicKey {
+  constructor(value) {
+    this._key = value;
+  }
+  toBase58() { return ""; }
+  toBuffer() { return Buffer.from([]); }
+  toString() { return ""; }
+  equals() { return true; }
+  toJSON() { return ""; }
+}
+
+// Transaction class mock
+class Transaction {
+  constructor() {}
+  add() { return this; }
+  sign() { return this; }
+  serialize() { return Buffer.from([]); }
+}
+
+// Message class mock
+class Message {}
+
+// Constants
+const SIGNATURE_LENGTH_IN_BYTES = 64;`
     );
 
     // Write the patched content back to the file

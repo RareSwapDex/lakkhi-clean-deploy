@@ -11,7 +11,7 @@
       "src": "package.json",
       "use": "@vercel/next",
       "config": {
-        "buildCommand": "node vercel-build.js && next build"
+        "buildCommand": "node vercel-build.js && node vercel-export-fix.js && next build"
       }
     }
   ]

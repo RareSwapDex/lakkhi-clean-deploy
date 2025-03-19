@@ -2,7 +2,7 @@ diff --git a/node_modules/@solana/web3.js/lib/index.browser.esm.js b/node_module
 index 4b2e6c9..8cd1b3a 100644
 --- a/node_modules/@solana/web3.js/lib/index.browser.esm.js
 +++ b/node_modules/@solana/web3.js/lib/index.browser.esm.js
-@@ -15,8 +15,33 @@ import * as BufferLayout from '@solana/buffer-layout';
+@@ -15,8 +15,55 @@ import * as BufferLayout from '@solana/buffer-layout';
  import {sha256} from '@noble/hashes/sha256';
  import {keccak_256} from '@noble/hashes/sha3';
  import * as assert from 'assert';
@@ -34,7 +34,32 @@ index 4b2e6c9..8cd1b3a 100644
 +  }
 +}
 +
-+// End of PATCH
++// Additional mocks for other common exports from @solana/web3.js
++// PublicKey class mock
++class PublicKey {
++  constructor(value) {
++    this._key = value;
++  }
++  toBase58() { return ""; }
++  toBuffer() { return Buffer.from([]); }
++  toString() { return ""; }
++  equals() { return true; }
++  toJSON() { return ""; }
++}
++
++// Transaction class mock
++class Transaction {
++  constructor() {}
++  add() { return this; }
++  sign() { return this; }
++  serialize() { return Buffer.from([]); }
++}
++
++// Message class mock
++class Message {}
++
++// Constants
++const SIGNATURE_LENGTH_IN_BYTES = 64;
  
  /**
   * @internal
