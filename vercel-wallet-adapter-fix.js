@@ -19,17 +19,46 @@ const web3jsPath = path.join(
 );
 
 try {
-  // First enhance web3.js with all required exports
+  // First, create a completely new mock for web3.js instead of appending
   if (fs.existsSync(web3jsPath)) {
-    console.log('Adding additional exports to @solana/web3.js...');
+    console.log('Replacing @solana/web3.js with mock implementation...');
     
-    let web3Content = fs.readFileSync(web3jsPath, 'utf8');
-    
-    // Check if we already added the exports
-    if (!web3Content.includes('class VersionedMessage')) {
-      // Add additional classes needed by wallet adapters
-      const additionalExports = `
-// Additional mock classes needed by wallet adapters
+    // Create a complete mock implementation of web3.js
+    const mockWeb3Content = `
+// Mock implementation of @solana/web3.js
+
+// Utility classes
+class PublicKey {
+  constructor(value) {
+    this._key = value || new Uint8Array(32);
+  }
+  toString() { return ""; }
+  toBase58() { return ""; }
+  toBuffer() { return Buffer.from([]); }
+  equals() { return true; }
+  toJSON() { return ""; }
+}
+
+class Transaction {
+  constructor() {
+    this.signatures = [];
+    this.feePayer = null;
+    this.instructions = [];
+    this.recentBlockhash = null;
+  }
+  add(...items) { return this; }
+  sign() { return this; }
+  serialize() { return Buffer.from([]); }
+  static from() { return new Transaction(); }
+  static populate() { return new Transaction(); }
+}
+
+class Message {
+  constructor() {}
+  serialize() { return new Uint8Array(); }
+  static from() { return new Message(); }
+}
+
 class VersionedMessage {
   constructor() {}
   static deserialize() { return new VersionedMessage(); }
@@ -64,63 +93,28 @@ class Keypair {
   static fromSeed(seed) { return new Keypair(); }
 }
 
-class PublicKey {
-  constructor(value) {
-    this._key = value || new Uint8Array(32);
-  }
-  toString() { return ""; }
-  toBase58() { return ""; }
-  toBuffer() { return Buffer.from([]); }
-  equals() { return true; }
-  toJSON() { return ""; }
-}
-
-class Transaction {
-  constructor() {
-    this.signatures = [];
-    this.feePayer = null;
-    this.instructions = [];
-    this.recentBlockhash = null;
-  }
-  add(...items) { return this; }
-  sign() { return this; }
-  serialize() { return Buffer.from([]); }
-  static from() { return new Transaction(); }
-  static populate() { return new Transaction(); }
-}
-
-class Message {
-  constructor() {}
-  serialize() { return new Uint8Array(); }
-  static from() { return new Message(); }
-}
-
+// Constants
 const SIGNATURE_LENGTH_IN_BYTES = 64;
 
 // Export all required types
 export {
+  PublicKey,
+  Transaction,
+  Message,
   VersionedMessage,
   VersionedTransaction,
   Connection,
   Keypair,
-  PublicKey,
-  Transaction,
-  Message,
   SIGNATURE_LENGTH_IN_BYTES
-};`;
+};
+`;
       
-      // Append our exports to the end of the file
-      web3Content += additionalExports;
-      
-      // Write the updated content back to the file
-      fs.writeFileSync(web3jsPath, web3Content, 'utf8');
-      console.log('Successfully added exports to @solana/web3.js!');
+      // Write the mock implementation to the file
+      fs.writeFileSync(web3jsPath, mockWeb3Content, 'utf8');
+      console.log('Successfully replaced @solana/web3.js with mock implementation!');
     } else {
-      console.log('Exports already added to @solana/web3.js.');
+      console.error('Could not find @solana/web3.js module!');
     }
-  } else {
-    console.error('Could not find @solana/web3.js module!');
-  }
 
   // Create mobile wallet adapter mock
   const adapterDir = path.dirname(mobileWalletAdapterPath);
@@ -133,7 +127,8 @@ export {
 // Mock implementation of @solana-mobile/mobile-wallet-adapter-protocol-web3js
 import { PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 
-// Mock classes that mirror the real implementations
+// Add missing transactRemote function
+export const transactRemote = () => Promise.resolve({});
 export const transact = () => Promise.resolve({});
 export const Authorization = {};
 export const AuthorizationResult = {};
@@ -159,6 +154,32 @@ export function signTransactions() { return Promise.resolve({ signedTransactions
     fs.writeFileSync(indexFilePath, `
 // Mock implementation of @solana-mobile/mobile-wallet-adapter-protocol-web3js index
 module.exports = require('./esm/index.js');
+`, 'utf8');
+  }
+
+  // Also fix the js-base64 module required by the mobile wallet adapter
+  const jsBase64Dir = path.join(
+    process.cwd(),
+    'node_modules/js-base64'
+  );
+  if (!fs.existsSync(jsBase64Dir)) {
+    fs.mkdirSync(jsBase64Dir, { recursive: true });
+    // Create a mock implementation for js-base64
+    fs.writeFileSync(path.join(jsBase64Dir, 'package.json'), JSON.stringify({
+      name: 'js-base64',
+      version: '1.0.0',
+      main: 'index.js',
+      type: 'module'
+    }), 'utf8');
+    
+    fs.writeFileSync(path.join(jsBase64Dir, 'index.js'), `
+export const toUint8Array = (str) => new Uint8Array();
+export const fromUint8Array = (arr) => '';
+export const Base64 = {
+  encode: (str) => '',
+  decode: (str) => ''
+};
+export default Base64;
 `, 'utf8');
   }
 
@@ -234,16 +255,27 @@ export class ParticleNetwork {
   );
 
   if (fs.existsSync(connectionProviderPath)) {
-    console.log('Ensuring Connection is properly imported in ConnectionProvider...');
-    const connectionContent = fs.readFileSync(connectionProviderPath, 'utf8');
-    
-    if (connectionContent.includes('Connection')) {
-      fs.writeFileSync(connectionProviderPath, connectionContent.replace(
-        "import { Connection } from '@solana/web3.js';",
-        "import { Connection } from '@solana/web3.js';"
-      ), 'utf8');
-      console.log('Connection import already properly set up.');
-    }
+    console.log('Creating mock ConnectionProvider...');
+    fs.writeFileSync(connectionProviderPath, `
+import { createContext, useContext, useMemo } from 'react';
+import { Connection } from '@solana/web3.js';
+
+const ConnectionContext = createContext({});
+
+export function ConnectionProvider({ children, endpoint, config }) {
+  const connection = useMemo(() => new Connection(), []);
+  return (
+    <ConnectionContext.Provider value={{ connection, endpoint, config }}>
+      {children}
+    </ConnectionContext.Provider>
+  );
+}
+
+export function useConnection() {
+  return useContext(ConnectionContext);
+}
+`, 'utf8');
+    console.log('Successfully created mock ConnectionProvider!');
   }
 
   // Fix wallet-adapter-mobile
@@ -252,11 +284,13 @@ export class ParticleNetwork {
     'node_modules/@solana-mobile/wallet-adapter-mobile/lib/esm/index.js'
   );
   
-  if (!fs.existsSync(path.dirname(mobileAdapterPath))) {
-    fs.mkdirSync(path.dirname(mobileAdapterPath), { recursive: true });
+  const mobileAdapterDir = path.dirname(mobileAdapterPath);
+  if (!fs.existsSync(mobileAdapterDir)) {
+    fs.mkdirSync(mobileAdapterDir, { recursive: true });
+  }
     
-    console.log('Creating mock for mobile wallet adapter...');
-    const mockMobileAdapter = `
+  console.log('Creating mock for mobile wallet adapter...');
+  const mockMobileAdapter = `
 // Mock implementation of @solana-mobile/wallet-adapter-mobile
 import { PublicKey } from '@solana/web3.js';
 
@@ -274,8 +308,108 @@ export class SolanaMobileWalletAdapter {
 }
 `;
     
-    fs.writeFileSync(mobileAdapterPath, mockMobileAdapter, 'utf8');
-    console.log('Successfully created mock for mobile wallet adapter!');
+  fs.writeFileSync(mobileAdapterPath, mockMobileAdapter, 'utf8');
+  console.log('Successfully created mock for mobile wallet adapter!');
+
+  // Fix package.json for rpc-websockets
+  const rpcWebsocketsDir = path.join(
+    process.cwd(),
+    'node_modules/rpc-websockets'
+  );
+  
+  if (fs.existsSync(rpcWebsocketsDir)) {
+    console.log('Updating rpc-websockets package.json...');
+    
+    // Create a more comprehensive package.json with proper exports
+    fs.writeFileSync(
+      path.join(rpcWebsocketsDir, 'package.json'),
+      JSON.stringify({
+        name: 'rpc-websockets',
+        version: '7.5.1',
+        description: 'Mock implementation for Solana',
+        main: 'dist/index.js',
+        exports: {
+          ".": "./dist/index.js",
+          "./dist/lib/client": "./dist/lib/client/index.js",
+          "./dist/lib/client/websocket": "./dist/lib/client/websocket.js",
+          "./dist/lib/client/websocket.browser": "./dist/lib/client/websocket.browser.js"
+        }
+      }, null, 2),
+      'utf8'
+    );
+    
+    // Ensure all required directories exist
+    [
+      path.join(rpcWebsocketsDir, 'dist'),
+      path.join(rpcWebsocketsDir, 'dist/lib'),
+      path.join(rpcWebsocketsDir, 'dist/lib/client')
+    ].forEach(dir => {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    });
+    
+    // Create the required files with mock implementations
+    const files = {
+      'dist/index.js': `
+module.exports = require('./lib/client');
+`,
+      'dist/lib/client/index.js': `
+class Client {
+  constructor() {
+    this.on = () => {};
+    this.call = () => Promise.resolve(null);
+    this.close = () => {};
+    this.login = () => Promise.resolve(true);
+    this.subscribe = () => Promise.resolve(1);
+    this.unsubscribe = () => Promise.resolve(true);
+  }
+}
+
+exports.Client = Client;
+exports.__esModule = true;
+exports.default = { Client };
+`,
+      'dist/lib/client/websocket.js': `
+class WebSocket {
+  constructor() {
+    this.on = () => {};
+    this.call = () => Promise.resolve(null);
+    this.close = () => {};
+    this.login = () => Promise.resolve(true);
+    this.subscribe = () => Promise.resolve(1);
+    this.unsubscribe = () => Promise.resolve(true);
+  }
+}
+
+module.exports = WebSocket;
+module.exports.__esModule = true;
+module.exports.default = WebSocket;
+`,
+      'dist/lib/client/websocket.browser.js': `
+class WebSocketBrowser {
+  constructor() {
+    this.on = () => {};
+    this.call = () => Promise.resolve(null);
+    this.close = () => {};
+    this.login = () => Promise.resolve(true);
+    this.subscribe = () => Promise.resolve(1);
+    this.unsubscribe = () => Promise.resolve(true);
+  }
+}
+
+module.exports = WebSocketBrowser;
+module.exports.__esModule = true;
+module.exports.default = WebSocketBrowser;
+`
+    };
+    
+    // Write all the mock files
+    Object.entries(files).forEach(([filePath, content]) => {
+      fs.writeFileSync(path.join(rpcWebsocketsDir, filePath), content, 'utf8');
+    });
+    
+    console.log('Successfully updated rpc-websockets package!');
   }
 
   console.log('Wallet adapter dependencies fixed successfully!');
