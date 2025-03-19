@@ -1,7 +1,7 @@
 {
   "framework": "nextjs",
   "installCommand": "npm install",
-  "buildCommand": "npm run build",
+  "buildCommand": "node vercel-build.js && node vercel-export-fix.js && node vercel-wallet-adapter-fix.js && next build",
   "env": {
     "NEXT_PUBLIC_SOLANA_NETWORK": "devnet",
     "NEXT_PUBLIC_RPC_URL": "https://api.devnet.solana.com"
@@ -11,7 +11,7 @@
       "src": "package.json",
       "use": "@vercel/next",
       "config": {
-        "buildCommand": "node vercel-build.js && node vercel-export-fix.js && next build"
+        "buildCommand": "node vercel-build.js && node vercel-export-fix.js && node vercel-wallet-adapter-fix.js && next build"
       }
     }
   ]
