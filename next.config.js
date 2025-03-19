@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const webpack = require('webpack');
+
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config, { isServer }) => {
@@ -20,7 +22,7 @@ const nextConfig = {
 
     // Add plugins to provide polyfills
     config.plugins.push(
-      new config.webpack.ProvidePlugin({
+      new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
         process: 'process/browser',
       })
