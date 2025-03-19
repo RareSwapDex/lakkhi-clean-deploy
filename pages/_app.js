@@ -6,11 +6,8 @@ import { PhantomWalletAdapter, SolflareWalletAdapter, TorusWalletAdapter } from 
 import { clusterApiUrl } from '@solana/web3.js';
 import { useMemo } from 'react';
 
-// Polyfill Buffer for the browser
-import { Buffer } from 'buffer';
-if (typeof window !== 'undefined') {
-  window.Buffer = Buffer;
-}
+// Import polyfills (must come before any Solana imports)
+import '../polyfills';
 
 // Import the wallet adapter CSS
 import '@solana/wallet-adapter-react-ui/styles.css';

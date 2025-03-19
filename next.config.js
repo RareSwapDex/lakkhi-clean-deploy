@@ -4,27 +4,23 @@ const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config, { isServer }) => {
-    // This is only needed for the client-side build
-    if (!isServer) {
-      // Polyfills for Node.js modules
-      config.resolve.fallback = {
-        fs: false,
-        path: false,
-        crypto: require.resolve('crypto-browserify'),
-        stream: require.resolve('stream-browserify'),
-        http: require.resolve('stream-http'),
-        https: require.resolve('https-browserify'),
-        zlib: require.resolve('browserify-zlib'),
-        assert: require.resolve('assert'),
-      };
+    // Handle the fallbacks for all environments
+    config.resolve.fallback = {
+      fs: false,
+      path: false,
+      crypto: require.resolve('crypto-browserify'),
+      stream: require.resolve('stream-browserify'),
+      http: require.resolve('stream-http'),
+      https: require.resolve('https-browserify'),
+      zlib: require.resolve('browserify-zlib'),
+      assert: require.resolve('assert'),
+    };
 
-      // Add our custom polyfills
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'rpc-websockets/dist/lib/client': path.resolve(__dirname, 'polyfills/rpc-websockets/dist/lib/client'),
-        'rpc-websockets/dist/lib/client/websocket.browser': path.resolve(__dirname, 'polyfills/rpc-websockets/dist/lib/client/websocket.browser'),
-      };
-    }
+    // Use a more direct approach to solve the rpc-websockets issue
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      'rpc-websockets': path.resolve(__dirname, 'polyfills/rpc-websockets-mock.js'),
+    };
 
     return config;
   },
