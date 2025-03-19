@@ -4,15 +4,12 @@ import process from 'process';
 
 // Make polyfills available globally
 if (typeof window !== 'undefined') {
-  // Buffer polyfill
-  window.Buffer = Buffer;
+  // Buffer polyfill - critical for Solana
+  window.Buffer = window.Buffer || Buffer;
   
-  // Process polyfill
-  window.process = process;
+  // Process polyfill - needed for various node-specific code
+  window.process = window.process || process;
   
-  // Console message to confirm polyfills are loaded
-  console.info('Browser polyfills initialized');
-}
-
-// Export the polyfills for direct import
-export { Buffer, process }; 
+  // Helpful debugging message
+  console.debug('Browser polyfills initialized');
+} 

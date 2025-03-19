@@ -5,5 +5,14 @@
   "env": {
     "NEXT_PUBLIC_SOLANA_NETWORK": "devnet",
     "NEXT_PUBLIC_RPC_URL": "https://api.devnet.solana.com"
-  }
+  },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next",
+      "config": {
+        "buildCommand": "node vercel-build.js && next build"
+      }
+    }
+  ]
 } 

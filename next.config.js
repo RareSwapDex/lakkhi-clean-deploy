@@ -1,6 +1,4 @@
 /** @type {import('next').NextConfig} */
-const path = require('path');
-
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config, { isServer }) => {
@@ -14,16 +12,19 @@ const nextConfig = {
       https: require.resolve('https-browserify'),
       zlib: require.resolve('browserify-zlib'),
       assert: require.resolve('assert'),
+      buffer: require.resolve('buffer'),
+      process: require.resolve('process/browser'),
+      util: require.resolve('util'),
+      url: require.resolve('url'),
     };
 
-    // Use a more direct approach to solve the rpc-websockets issue
-    // Add specific path aliases to catch all the import variations
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      'rpc-websockets': path.resolve(__dirname, 'polyfills/rpc-websockets-mock.js'),
-      'rpc-websockets/dist/lib/client': path.resolve(__dirname, 'polyfills/rpc-websockets-mock.js'),
-      'rpc-websockets/dist/lib/client/websocket.browser': path.resolve(__dirname, 'polyfills/rpc-websockets-client-browser.js'),
-    };
+    // Add plugins to provide polyfills
+    config.plugins.push(
+      new config.webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser',
+      })
+    );
 
     return config;
   },

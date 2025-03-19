@@ -1,0 +1,40 @@
+diff --git a/node_modules/@solana/web3.js/lib/index.browser.esm.js b/node_modules/@solana/web3.js/lib/index.browser.esm.js
+index 4b2e6c9..8cd1b3a 100644
+--- a/node_modules/@solana/web3.js/lib/index.browser.esm.js
++++ b/node_modules/@solana/web3.js/lib/index.browser.esm.js
+@@ -15,8 +15,33 @@ import * as BufferLayout from '@solana/buffer-layout';
+ import {sha256} from '@noble/hashes/sha256';
+ import {keccak_256} from '@noble/hashes/sha3';
+ import * as assert from 'assert';
+-import {Client as RpcWebSocketClient} from 'rpc-websockets/dist/lib/client';
+-import RpcWebSocketClient$1 from 'rpc-websockets/dist/lib/client/websocket.browser';
++
++// PATCH: Mock implementation instead of real imports
++// Mock for rpc-websockets/dist/lib/client
++class RpcWebSocketClient {
++  constructor() {
++    this.on = () => {};
++    this.call = () => Promise.resolve(null);
++    this.close = () => {};
++    this.login = () => Promise.resolve(true);
++    this.subscribe = () => Promise.resolve(1);
++    this.unsubscribe = () => Promise.resolve(true);
++  }
++}
++
++// Mock for rpc-websockets/dist/lib/client/websocket.browser
++class RpcWebSocketClient$1 {
++  constructor() {
++    this.on = () => {};
++    this.call = () => Promise.resolve(null);
++    this.close = () => {};
++    this.login = () => Promise.resolve(true);
++    this.subscribe = () => Promise.resolve(1);
++    this.unsubscribe = () => Promise.resolve(true);
++  }
++}
++
++// End of PATCH
+ 
+ /**
+  * @internal

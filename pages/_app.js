@@ -1,5 +1,7 @@
 // Import polyfills first (must come before any other imports)
 import '../polyfills';
+// Import manual overrides for rpc-websockets
+import '../polyfills/rpc-websockets-overrides';
 
 import { ChakraProvider, extendTheme } from '@chakra-ui/react';
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
