@@ -8,7 +8,7 @@ export default function Footer() {
         <Flex direction={{ base: 'column', md: 'row' }} justify="space-between" align="center">
           <Box mb={{ base: 6, md: 0 }}>
             <Text fontSize="lg" fontWeight="bold" color="blue.600">Lakkhi Program</Text>
-            <Text mt={2} color="gray.600">A decentralized crowdfunding platform on Solana</Text>
+            <Text mt={2} color="gray.600">A decentralized donation platform on Solana</Text>
           </Box>
           
           <Stack direction={{ base: 'column', md: 'row' }} spacing={6}>

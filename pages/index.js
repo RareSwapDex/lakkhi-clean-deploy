@@ -12,10 +12,10 @@ export default function Home({ featuredCampaigns }) {
         <Container maxW="container.xl">
           <Stack spacing={6} textAlign={{ base: 'center', md: 'left' }}>
             <Heading as="h1" size="2xl">
-              Crowdfunding on Solana
+              Decentralized Donation Platform on Solana
             </Heading>
             <Text fontSize="xl" maxW="800px">
-              Lakkhi Program is a decentralized crowdfunding platform built on Solana, 
+              Lakkhi Program is a decentralized donation platform built on Solana, 
               enabling transparent and low-cost fundraising for projects that matter.
             </Text>
             <Flex 

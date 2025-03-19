@@ -1,10 +1,10 @@
-# Lakkhi Program V2
+# Lakkhi Program
 
-A decentralized crowdfunding platform built on Solana
+A decentralized donation platform built on Solana
 
 ## Overview
 
-Lakkhi Program is a crowdfunding platform that allows users to create and contribute to fundraising campaigns using Solana blockchain. This ensures transparency, security, and low transaction fees.
+Lakkhi Program is a donation platform that allows users to create and contribute to fundraising campaigns using Solana blockchain. This ensures transparency, security, and low transaction fees.
 
 ## Features
 
